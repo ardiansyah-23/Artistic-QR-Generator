@@ -7,12 +7,38 @@ st.set_page_config(page_title="Advanced AI QR Generator", layout="centered")
 st.title("Pembuat QR Code AI (Advanced)")
 st.write("Ubah tautan (URL) menjadi QR Code artistik berkualitas tinggi dengan parameter AI lengkap.")
 
+# Inisialisasi Session State untuk menyimpan nilai prompt
+if 'selected_preset' not in st.session_state:
+    st.session_state.selected_preset = "Mata Futuristik (Cybernetic Eye)"
+if 'prompt_text' not in st.session_state:
+    st.session_state.prompt_text = "futuristic cybernetic eye with glowing neon lights, intricate mechanical details, highly detailed, sharp contrast"
+if 'negative_prompt' not in st.session_state:
+    st.session_state.negative_prompt = "blurry, low quality, distorted, ugly, deformed"
+
+# Fungsi callback saat preset diubah
+def update_preset():
+    preset = st.session_state.pilihan_preset
+    if preset == "Mata Futuristik (Cybernetic Eye)":
+        st.session_state.prompt_text = "futuristic cybernetic eye with glowing neon lights, intricate mechanical details, highly detailed, sharp contrast"
+        st.session_state.negative_prompt = "blurry, low quality, distorted, ugly, deformed"
+    elif preset == "Pemandangan Gunung Salju (Mountain Snow)":
+        st.session_state.prompt_text = "snowy mountain peaks, dramatic clouds, blue and white landscape, artistic QR code integration, highly detailed, sharp contrast"
+        st.session_state.negative_prompt = "blurry, low quality, deformed, text, watermark"
+    elif preset == "Kotak 3D Gaya Minecraft (Minecraft Blocks)":
+        st.session_state.prompt_text = "3d voxel blocks, minecraft style landscape, green and brown nature, floating islands, detailed pixel structure, artistic QR code"
+        st.session_state.negative_prompt = "blurry, low quality, flat 2d, distorted, ugly"
+    elif preset == "Lukisan Jepang / Geisha (Japanese Geisha)":
+        st.session_state.prompt_text = "traditional Japanese geisha painting, Mount Fuji background, cherry blossoms, red and blue floral pattern, ukiyo-e art style, detailed QR code"
+        st.session_state.negative_prompt = "blurry, low resolution, monochrome, deformed face, low quality"
+    elif preset == "Burung Berwarna-warni (Colorful Bird)":
+        st.session_state.prompt_text = "vibrant colorful tropical bird perched on a branch, rainbow feathers, detailed plumage, glowing neon background, sharp artistic QR code"
+        st.session_state.negative_prompt = "blurry, dull colors, low quality, monochrome, distorted"
+
 # ---------------------------------------------------------
-# 1. BAGIAN INPUT DATA (UI) & PRESET GAYA DENGAN PREVIEW GAMBAR GITHUB
+# 1. BAGIAN INPUT DATA (UI) & PRESET GAYA DENGAN PREVIEW GITHUB
 # ---------------------------------------------------------
 st.subheader("1. Pilih Preset Gaya / Tema AI")
 
-# Layout kolom: Kolom kiri untuk pilihan selectbox, kolom kanan untuk preview gambar dari GitHub
 col_select, col_preview = st.columns([1, 1])
 
 with col_select:
@@ -25,42 +51,25 @@ with col_select:
             "Lukisan Jepang / Geisha (Japanese Geisha)",
             "Burung Berwarna-warni (Colorful Bird)",
             "Kustom (Tulis Sendiri)"
-        )
+        ),
+        key="pilihan_preset",
+        on_change=update_preset
     )
 
 with col_preview:
-    if pilihan_preset == "Mata Futuristik (Cybernetic Eye)":
+    current_preset = st.session_state.pilihan_preset
+    if current_preset == "Mata Futuristik (Cybernetic Eye)":
         st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/Mata-Futuristik-Cybernetic-Eye.png", width=200, caption="Preview: Mata Futuristik")
-    elif pilihan_preset == "Pemandangan Gunung Salju (Mountain Snow)":
+    elif current_preset == "Pemandangan Gunung Salju (Mountain Snow)":
         st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/mountain-snow-peaks-blue-black-background-black-square-artistic-qr-code.webp", width=200, caption="Preview: Mountain Snow")
-    elif pilihan_preset == "Kotak 3D Gaya Minecraft (Minecraft Blocks)":
+    elif current_preset == "Kotak 3D Gaya Minecraft (Minecraft Blocks)":
         st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/minecraft-green-brown-black-square-3d-qr-code-art.webp", width=200, caption="Preview: Minecraft Blocks")
-    elif pilihan_preset == "Lukisan Jepang / Geisha (Japanese Geisha)":
+    elif current_preset == "Lukisan Jepang / Geisha (Japanese Geisha)":
         st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/geisha-japanese-painting-red-blue-background-black-square-artistic-qr-code.webp", width=200, caption="Preview: Japanese Geisha")
-    elif pilihan_preset == "Burung Berwarna-warni (Colorful Bird)":
+    elif current_preset == "Burung Berwarna-warni (Colorful Bird)":
         st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/colorful-bird-orange-blue-background-black-square-artistic-qr-code.webp", width=200, caption="Preview: Colorful Bird")
     else:
         st.info("Mode Kustom: Bebas tulis prompt kustommu sendiri di bawah.")
-
-# Mengatur nilai otomatis berdasarkan preset yang dipilih
-if pilihan_preset == "Mata Futuristik (Cybernetic Eye)":
-    default_prompt = "futuristic cybernetic eye with glowing neon lights, intricate mechanical details, highly detailed, sharp contrast"
-    default_negative = "blurry, low quality, distorted, ugly, deformed"
-elif pilihan_preset == "Pemandangan Gunung Salju (Mountain Snow)":
-    default_prompt = "snowy mountain peaks, dramatic clouds, blue and white landscape, artistic QR code integration, highly detailed, sharp contrast"
-    default_negative = "blurry, low quality, deformed, text, watermark"
-elif pilihan_preset == "Kotak 3D Gaya Minecraft (Minecraft Blocks)":
-    default_prompt = "3d voxel blocks, minecraft style landscape, green and brown nature, floating islands, detailed pixel structure, artistic QR code"
-    default_negative = "blurry, low quality, flat 2d, distorted, ugly"
-elif pilihan_preset == "Lukisan Jepang / Geisha (Japanese Geisha)":
-    default_prompt = "traditional Japanese geisha painting, Mount Fuji background, cherry blossoms, red and blue floral pattern, ukiyo-e art style, detailed QR code"
-    default_negative = "blurry, low resolution, monochrome, deformed face, low quality"
-elif pilihan_preset == "Burung Berwarna-warni (Colorful Bird)":
-    default_prompt = "vibrant colorful tropical bird perched on a branch, rainbow feathers, detailed plumage, glowing neon background, sharp artistic QR code"
-    default_negative = "blurry, dull colors, low quality, monochrome, distorted"
-else:
-    default_prompt = "futuristic city with neon lights, cyberpunk aesthetic, highly detailed"
-    default_negative = "blurry, low quality, distorted, ugly, deformed"
 
 st.subheader("2. Masukkan Target URL & Parameter")
 target_url = st.text_input(
@@ -69,24 +78,20 @@ target_url = st.text_input(
     placeholder="Contoh: https://qrcode-ai.com"
 )
 
-# Input Prompt Utama
+# Input Prompt Utama terikat dengan session state
 prompt_text = st.text_area(
     "Prompt (Deskripsi Visual)", 
-    value=default_prompt
+    key="prompt_text"
 )
 
-# Input Negative Prompt
+# Input Negative Prompt terikat dengan session state
 negative_prompt = st.text_input(
     "Negative Prompt (Hal yang ingin dihindari AI)", 
-    value=default_negative
+    key="negative_prompt"
 )
 
-# Pengaturan tambahan menggunakan layout kolom
-col1, col2 = st.columns(2)
-with col1:
-    style_name = st.text_input("Style Name", value="style_2")
-with col2:
-    seed_number = st.number_input("Seed (Angka Konsistensi)", value=42, step=1)
+seed_number = st.number_input("Seed (Angka Konsistensi)", value=42, step=1)
+style_name = "style_2"  # Backend parameter
 
 # ---------------------------------------------------------
 # 3. PROSES EKSEKUSI (BACKEND)
