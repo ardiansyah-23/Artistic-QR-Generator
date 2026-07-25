@@ -8,25 +8,60 @@ st.title("Pembuat QR Code AI (Advanced)")
 st.write("Ubah tautan (URL) menjadi QR Code artistik berkualitas tinggi dengan parameter AI lengkap.")
 
 # ---------------------------------------------------------
-# 1. BAGIAN INPUT DATA (UI)
+# 1. BAGIAN INPUT DATA (UI) & PRESET GAYA
 # ---------------------------------------------------------
-st.subheader("1. Masukkan Target URL")
+st.subheader("1. Pilih Preset Gaya / Tema AI")
+
+# Menambahkan pilihan preset agar mudah memilih gaya
+pilihan_preset = st.selectbox(
+    "Pilih Template Gaya:",
+    (
+        "Mata Futuristik (Cybernetic Eye)",
+        "Pemandangan Gunung Salju (Mountain Snow)",
+        "Kotak 3D Gaya Minecraft (Minecraft Blocks)",
+        "Lukisan Jepang / Geisha (Japanese Geisha)",
+        "Burung Berwarna-warni (Colorful Bird)",
+        "Kustom (Tulis Sendiri)"
+    )
+)
+
+# Mengatur nilai otomatis berdasarkan preset yang dipilih
+if pilihan_preset == "Mata Futuristik (Cybernetic Eye)":
+    default_prompt = "futuristic cybernetic eye with glowing neon lights, intricate mechanical details, highly detailed, sharp contrast"
+    default_negative = "blurry, low quality, distorted, ugly, deformed"
+elif pilihan_preset == "Pemandangan Gunung Salju (Mountain Snow)":
+    default_prompt = "snowy mountain peaks, dramatic clouds, blue and white landscape, artistic QR code integration, highly detailed, sharp contrast"
+    default_negative = "blurry, low quality, deformed, text, watermark"
+elif pilihan_preset == "Kotak 3D Gaya Minecraft (Minecraft Blocks)":
+    default_prompt = "3d voxel blocks, minecraft style landscape, green and brown nature, floating islands, detailed pixel structure, artistic QR code"
+    default_negative = "blurry, low quality, flat 2d, distorted, ugly"
+elif pilihan_preset == "Lukisan Jepang / Geisha (Japanese Geisha)":
+    default_prompt = "traditional Japanese geisha painting, Mount Fuji background, cherry blossoms, red and blue floral pattern, ukiyo-e art style, detailed QR code"
+    default_negative = "blurry, low resolution, monochrome, deformed face, low quality"
+elif pilihan_preset == "Burung Berwarna-warni (Colorful Bird)":
+    default_prompt = "vibrant colorful tropical bird perched on a branch, rainbow feathers, detailed plumage, glowing neon background, sharp artistic QR code"
+    default_negative = "blurry, dull colors, low quality, monochrome, distorted"
+else:
+    default_prompt = "futuristic city with neon lights, cyberpunk aesthetic, highly detailed"
+    default_negative = "blurry, low quality, distorted, ugly, deformed"
+
+st.subheader("2. Masukkan Target URL & Parameter")
 target_url = st.text_input(
     "URL/Tautan Tujuan", 
+    value="https://qrcode-ai.com",
     placeholder="Contoh: https://qrcode-ai.com"
 )
 
-st.subheader("2. Pengaturan Visual AI")
 # Input Prompt Utama
 prompt_text = st.text_area(
     "Prompt (Deskripsi Visual)", 
-    value="futuristic city with neon lights, cyberpunk aesthetic, highly detailed"
+    value=default_prompt
 )
 
 # Input Negative Prompt
 negative_prompt = st.text_input(
     "Negative Prompt (Hal yang ingin dihindari AI)", 
-    value="blurry, low quality, distorted, ugly, deformed"
+    value=default_negative
 )
 
 # Pengaturan tambahan menggunakan layout kolom
