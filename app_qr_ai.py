@@ -1,48 +1,74 @@
 import streamlit as st
-from PIL import Image
 import requests
 
 # Mengatur tampilan halaman web
 st.set_page_config(page_title="Artistic QR Generator", layout="centered")
 
-st.title("Pembuat QR Code Artistik (ControlNet)")
-st.write("Ubah QR code dasar menjadi karya seni menggunakan Stable Diffusion!")
+st.title("Pembuat QR Code Artistik (AI)")
+st.write("Ubah tautan (URL) menjadi QR Code karya seni menggunakan AI secara otomatis!")
 
 # Mengatur layout input di web
-st.subheader("1. Masukkan Bahan Dasar")
-uploaded_file = st.file_uploader("Unggah QR Code Dasar (Format: JPG/PNG)", type=["png", "jpg", "jpeg"])
+st.subheader("1. Masukkan Data")
+# Karena API langsung meminta URL tujuan, kita ganti tombol upload dengan input teks
+target_url = st.text_input(
+    "Masukkan URL/Tautan Tujuan", 
+    placeholder="Contoh: https://google.com"
+)
 
 prompt = st.text_area(
     "Masukkan Deskripsi Visual (Prompt)", 
-    placeholder="Contoh: A lush tropical forest with waterfalls, parrots, and subtle hidden patterns..."
+    placeholder="Contoh: futuristic city with neon lights"
 )
 
 # Tombol untuk memulai proses
 st.subheader("2. Proses AI")
 if st.button("Generate QR Code"):
-    # Pengecekan apakah data sudah lengkap
-    if uploaded_file is not None and prompt:
-        st.info("Memproses gambar... (Ini akan memanggil API AI)")
-        
-        # Menampilkan gambar QR code asli yang diunggah
-        image = Image.open(uploaded_file)
-        st.image(image, caption="QR Code Asli", width=250)
+    # Pengecekan apakah URL dan prompt sudah diisi
+    if target_url and prompt:
+        st.info("Memproses ke server AI... (Tunggu sebentar ya)")
 
         # ---------------------------------------------------------
-        # BAGIAN INTEGRASI API AI (BACKEND)
-        # Di sinilah kamu mengirim gambar dan prompt ke mesin AI.
-        # Jika menggunakan API seperti Replicate, kodenya diletakkan di sini.
-        #
-        # Contoh simulasi logika (pseudocode):
-        # file_data = uploaded_file.getvalue()
-        # response = requests.post(
-        #     "URL_API_STABLE_DIFFUSION_KAMU", 
-        #     data={"prompt": prompt, "image": file_data}
-        # )
-        # final_image = Image.open(BytesIO(response.content))
-        # st.image(final_image, caption="Hasil QR Code Artistik")
+        # BAGIAN INTEGRASI API AI (Menggunakan kode aslimu)
         # ---------------------------------------------------------
         
-        st.success("Proses selesai! (Nantinya hasil gambar AI akan muncul di sini)")
+        API_URL = 'https://odin.qrcode-ai.com/api/qrcode'
+        
+        # Header menggunakan format dari kodemu ('x-api-key')
+        headers = {
+            'x-api-key': 'qrc_xYWerAz0o3kxyEnuMeSC1784983849516',
+            'Content-Type': 'application/json'
+        }
+        
+        # Payload (data json) yang dikirim ke server AI
+        payload = {
+            'to': target_url,
+            'type': 'url',
+            'config': {
+                'prompt': prompt,
+                'style_name': 'style_2'
+            }
+        }
+        
+        try:
+            # Mengirim request menggunakan format JSON
+            response = requests.post(API_URL, headers=headers, json=payload)
+            
+            # Jika berhasil (Kode 200)
+            if response.status_code == 200:
+                # Mengambil data balasan dari server dalam bentuk JSON
+                data = response.json()
+                
+                # Mengambil URL gambar hasil sesuai kodemu
+                hasil_qr_url = data['qrcode']['url']
+                
+                # Menampilkan gambar langsung dari URL yang diberikan API
+                st.image(hasil_qr_url, caption="Hasil QR Code Artistik!")
+                st.success("Yey, proses selesai!")
+            else:
+                st.error(f"Gagal memproses. Kode Error: {response.status_code}. Pesan: {response.text}")
+                
+        except Exception as e:
+            st.error(f"Terjadi kesalahan koneksi ke internet atau server: {e}")
+            
     else:
-        st.warning("Mohon unggah QR Code dan masukkan prompt terlebih dahulu sebelum menekan tombol!")
+        st.warning("Mohon isi URL Tujuan dan Deskripsi Visual (Prompt) terlebih dahulu!")
