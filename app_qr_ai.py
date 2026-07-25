@@ -8,22 +8,49 @@ st.title("Pembuat QR Code AI (Advanced)")
 st.write("Ubah tautan (URL) menjadi QR Code artistik berkualitas tinggi dengan parameter AI lengkap.")
 
 # ---------------------------------------------------------
-# 1. BAGIAN INPUT DATA (UI) & PRESET GAYA
+# 1. BAGIAN INPUT DATA (UI) & PRESET GAYA DENGAN PREVIEW GAMBAR
 # ---------------------------------------------------------
 st.subheader("1. Pilih Preset Gaya / Tema AI")
 
-# Menambahkan pilihan preset agar mudah memilih gaya
-pilihan_preset = st.selectbox(
-    "Pilih Template Gaya:",
-    (
-        "Mata Futuristik (Cybernetic Eye)",
-        "Pemandangan Gunung Salju (Mountain Snow)",
-        "Kotak 3D Gaya Minecraft (Minecraft Blocks)",
-        "Lukisan Jepang / Geisha (Japanese Geisha)",
-        "Burung Berwarna-warni (Colorful Bird)",
-        "Kustom (Tulis Sendiri)"
+# Menyiapkan kamus tautan gambar preview untuk setiap preset
+preview_images = {
+    "Mata Futuristik (Cybernetic Eye)": "https://cdn.qrcode-ai.com/qrcode/sample-eye.png", # Ganti dengan URL preview yang sesuai jika ada
+    "Pemandangan Gunung Salju (Mountain Snow)": "https://cdn.qrcode-ai.com/qrcode/mountain-snow-peaks-blue-black-background-black-square-artistic-qr-code.webp",
+    "Kotak 3D Gaya Minecraft (Minecraft Blocks)": "https://cdn.qrcode-ai.com/qrcode/minecraft-green-brown-black-square-3d-qr-code-art.webp",
+    "Lukisan Jepang / Geisha (Japanese Geisha)": "https://cdn.qrcode-ai.com/qrcode/geisha-japanese-painting-red-blue-background-black-square-artistic-qr-code.webp",
+    "Burung Berwarna-warni (Colorful Bird)": "https://cdn.qrcode-ai.com/qrcode/colorful-bird-orange-blue-background-black-square-artistic-qr-code.webp",
+    "Kustom (Tulis Sendiri)": None
+}
+
+# Layout kolom: Kolom kiri untuk pilihan selectbox, kolom kanan untuk preview gambar
+col_select, col_preview = st.columns([1, 1])
+
+with col_select:
+    pilihan_preset = st.selectbox(
+        "Pilih Template Gaya:",
+        (
+            "Mata Futuristik (Cybernetic Eye)",
+            "Pemandangan Gunung Salju (Mountain Snow)",
+            "Kotak 3D Gaya Minecraft (Minecraft Blocks)",
+            "Lukisan Jepang / Geisha (Japanese Geisha)",
+            "Burung Berwarna-warni (Colorful Bird)",
+            "Kustom (Tulis Sendiri)"
+        )
     )
-)
+
+with col_preview:
+    if pilihan_preset == "Mata Futuristik (Cybernetic Eye)":
+        st.info("Preview: Tema Mata Cybernetic / Futuristik")
+    elif pilihan_preset == "Pemandangan Gunung Salju (Mountain Snow)":
+        st.image("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200&auto=format&fit=crop&q=60", width=150, caption="Acuan: Mountain Snow")
+    elif pilihan_preset == "Kotak 3D Gaya Minecraft (Minecraft Blocks)":
+        st.info("Acuan: Tema Blok Voxel 3D")
+    elif pilihan_preset == "Lukisan Jepang / Geisha (Japanese Geisha)":
+        st.info("Acuan: Tema Ukiyo-e Geisha")
+    elif pilihan_preset == "Burung Berwarna-warni (Colorful Bird)":
+        st.info("Acuan: Tema Burung Tropis")
+    else:
+        st.write("Mode Kustom (Bebas atur prompt sendiri)")
 
 # Mengatur nilai otomatis berdasarkan preset yang dipilih
 if pilihan_preset == "Mata Futuristik (Cybernetic Eye)":
@@ -85,7 +112,6 @@ if st.button("Generate QR Code"):
             'Content-Type': 'application/json'
         }
         
-        # MENGGUNAKAN FORMAT JSON LENGKAP
         payload = {
             "to": target_url,
             "type": "url",
@@ -102,13 +128,10 @@ if st.button("Generate QR Code"):
             
             if response.status_code == 200:
                 data = response.json()
-                
-                # Mengambil URL gambar dari struktur respons API
                 hasil_qr_url = data['qrcode']['url']
                 width = data['qrcode']['width']
                 height = data['qrcode']['height']
                 
-                # Menampilkan hasil gambar dan informasi resolusi
                 st.image(hasil_qr_url, caption=f"Hasil QR Code (Resolusi: {width}x{height} px)")
                 st.success("Berhasil! QR Code artistik siap di-scan.")
             else:
