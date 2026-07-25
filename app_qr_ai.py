@@ -7,7 +7,14 @@ st.set_page_config(page_title="Advanced AI QR Generator", layout="centered")
 st.title("Pembuat QR Code AI (Advanced)")
 st.write("Ubah tautan (URL) menjadi QR Code artistik berkualitas tinggi dengan parameter AI lengkap.")
 
-# Inisialisasi Session State untuk menyimpan nilai prompt
+# DAFTAR API KEY BARU
+API_KEYS = [
+    "qrc_POnzZzb_nwRiYp-OnEmB1784986994929",
+    "qrc_-U_JNSOJ7lwQvyfbwLRd1784987079238",
+    "qrc_Jb-bXByGEcZMyd1ZHKOs1784987303682",
+]
+
+# Inisialisasi Session State
 if 'selected_preset' not in st.session_state:
     st.session_state.selected_preset = "Mata Futuristik (Cybernetic Eye)"
 if 'prompt_text' not in st.session_state:
@@ -15,7 +22,6 @@ if 'prompt_text' not in st.session_state:
 if 'negative_prompt' not in st.session_state:
     st.session_state.negative_prompt = "blurry, low quality, distorted, ugly, deformed"
 
-# Fungsi callback saat preset diubah
 def update_preset():
     preset = st.session_state.pilihan_preset
     if preset == "Mata Futuristik (Cybernetic Eye)":
@@ -35,7 +41,7 @@ def update_preset():
         st.session_state.negative_prompt = "blurry, dull colors, low quality, monochrome, distorted"
 
 # ---------------------------------------------------------
-# 1. BAGIAN INPUT DATA (UI) & PRESET GAYA DENGAN PREVIEW GITHUB
+# 1. BAGIAN INPUT DATA (UI) & PRESET GAYA
 # ---------------------------------------------------------
 st.subheader("1. Pilih Preset Gaya / Tema AI")
 
@@ -78,35 +84,19 @@ target_url = st.text_input(
     placeholder="Contoh: https://qrcode-ai.com"
 )
 
-# Input Prompt Utama terikat dengan session state
-prompt_text = st.text_area(
-    "Prompt (Deskripsi Visual)", 
-    key="prompt_text"
-)
-
-# Input Negative Prompt terikat dengan session state
-negative_prompt = st.text_input(
-    "Negative Prompt (Hal yang ingin dihindari AI)", 
-    key="negative_prompt"
-)
+prompt_text = st.text_area("Prompt (Deskripsi Visual)", key="prompt_text")
+negative_prompt = st.text_input("Negative Prompt (Hal yang ingin dihindari AI)", key="negative_prompt")
 
 seed_number = st.number_input("Seed (Angka Konsistensi)", value=42, step=1)
-style_name = "style_2"  # Backend parameter
+style_name = "style_2"
 
 # ---------------------------------------------------------
-# 3. PROSES EKSEKUSI (BACKEND)
+# 3. PROSES EKSEKUSI (BACKEND DENGAN ROTASI MULTI API KEY)
 # ---------------------------------------------------------
 st.subheader("3. Proses Generate")
 if st.button("Generate QR Code"):
     if target_url and prompt_text:
-        st.info("Mengirim instruksi ke server AI... (Tunggu sebentar)")
-        
         API_URL = 'https://odin.qrcode-ai.com/api/qrcode'
-        headers = {
-            'x-api-key': 'qrc_xYWerAz0o3kxyEnuMeSC1784983849516',
-            'Content-Type': 'application/json'
-        }
-        
         payload = {
             "to": target_url,
             "type": "url",
@@ -118,22 +108,42 @@ if st.button("Generate QR Code"):
             }
         }
         
-        try:
-            response = requests.post(API_URL, headers=headers, json=payload)
+        berhasil = False
+        response = None
+        
+        for index, key in enumerate(API_KEYS):
+            st.info(f"Mencoba mengirim dengan API Key ke-{index + 1}...")
+            headers = {
+                'x-api-key': key,
+                'Content-Type': 'application/json'
+            }
             
-            if response.status_code == 200:
-                data = response.json()
-                hasil_qr_url = data['qrcode']['url']
-                width = data['qrcode']['width']
-                height = data['qrcode']['height']
+            try:
+                response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
                 
-                st.image(hasil_qr_url, caption=f"Hasil QR Code (Resolusi: {width}x{height} px)")
-                st.success("Berhasil! QR Code artistik siap di-scan.")
+                if response.status_code == 200:
+                    berhasil = True
+                    break
+                elif response.status_code == 421:
+                    continue
+                else:
+                    break
+            except Exception as e:
+                continue
+        
+        if berhasil and response:
+            data = response.json()
+            hasil_qr_url = data['qrcode']['url']
+            width = data['qrcode']['width']
+            height = data['qrcode']['height']
+            
+            st.image(hasil_qr_url, caption=f"Hasil QR Code (Resolusi: {width}x{height} px)")
+            st.success("Berhasil! QR Code artistik siap di-scan.")
+        else:
+            if response and response.status_code == 421:
+                st.error("Semua API Key yang terdaftar telah habis kuotanya (Limit 421).")
             else:
-                st.error(f"Gagal memproses. Kode Error: {response.status_code}. Pesan: {response.text}")
-                
-        except Exception as e:
-            st.error(f"Terjadi kesalahan koneksi ke server: {e}")
-            
+                error_msg = response.text if response else "Koneksi gagal"
+                st.error(f"Gagal memproses. Pesan: {error_msg}")
     else:
         st.warning("Mohon isi URL Tujuan dan Prompt terlebih dahulu!")
