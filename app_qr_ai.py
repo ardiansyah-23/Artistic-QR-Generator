@@ -8,21 +8,11 @@ st.title("Pembuat QR Code AI (Advanced)")
 st.write("Ubah tautan (URL) menjadi QR Code artistik berkualitas tinggi dengan parameter AI lengkap.")
 
 # ---------------------------------------------------------
-# 1. BAGIAN INPUT DATA (UI) & PRESET GAYA DENGAN PREVIEW GAMBAR
+# 1. BAGIAN INPUT DATA (UI) & PRESET GAYA DENGAN PREVIEW GAMBAR GITHUB
 # ---------------------------------------------------------
 st.subheader("1. Pilih Preset Gaya / Tema AI")
 
-# Menyiapkan kamus tautan gambar preview untuk setiap preset
-preview_images = {
-    "Mata Futuristik (Cybernetic Eye)": "https://cdn.qrcode-ai.com/qrcode/sample-eye.png", # Ganti dengan URL preview yang sesuai jika ada
-    "Pemandangan Gunung Salju (Mountain Snow)": "https://cdn.qrcode-ai.com/qrcode/mountain-snow-peaks-blue-black-background-black-square-artistic-qr-code.webp",
-    "Kotak 3D Gaya Minecraft (Minecraft Blocks)": "https://cdn.qrcode-ai.com/qrcode/minecraft-green-brown-black-square-3d-qr-code-art.webp",
-    "Lukisan Jepang / Geisha (Japanese Geisha)": "https://cdn.qrcode-ai.com/qrcode/geisha-japanese-painting-red-blue-background-black-square-artistic-qr-code.webp",
-    "Burung Berwarna-warni (Colorful Bird)": "https://cdn.qrcode-ai.com/qrcode/colorful-bird-orange-blue-background-black-square-artistic-qr-code.webp",
-    "Kustom (Tulis Sendiri)": None
-}
-
-# Layout kolom: Kolom kiri untuk pilihan selectbox, kolom kanan untuk preview gambar
+# Layout kolom: Kolom kiri untuk pilihan selectbox, kolom kanan untuk preview gambar dari GitHub
 col_select, col_preview = st.columns([1, 1])
 
 with col_select:
@@ -40,17 +30,17 @@ with col_select:
 
 with col_preview:
     if pilihan_preset == "Mata Futuristik (Cybernetic Eye)":
-        st.info("Preview: Tema Mata Cybernetic / Futuristik")
+        st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/Mata-Futuristik-Cybernetic-Eye.png", width=200, caption="Preview: Mata Futuristik")
     elif pilihan_preset == "Pemandangan Gunung Salju (Mountain Snow)":
-        st.image("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200&auto=format&fit=crop&q=60", width=150, caption="Acuan: Mountain Snow")
+        st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/mountain-snow-peaks-blue-black-background-black-square-artistic-qr-code.webp", width=200, caption="Preview: Mountain Snow")
     elif pilihan_preset == "Kotak 3D Gaya Minecraft (Minecraft Blocks)":
-        st.info("Acuan: Tema Blok Voxel 3D")
+        st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/minecraft-green-brown-black-square-3d-qr-code-art.webp", width=200, caption="Preview: Minecraft Blocks")
     elif pilihan_preset == "Lukisan Jepang / Geisha (Japanese Geisha)":
-        st.info("Acuan: Tema Ukiyo-e Geisha")
+        st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/geisha-japanese-painting-red-blue-background-black-square-artistic-qr-code.webp", width=200, caption="Preview: Japanese Geisha")
     elif pilihan_preset == "Burung Berwarna-warni (Colorful Bird)":
-        st.info("Acuan: Tema Burung Tropis")
+        st.image("https://raw.githubusercontent.com/ardiansyah-23/Artistic-QR-Generator/main/colorful-bird-orange-blue-background-black-square-artistic-qr-code.webp", width=200, caption="Preview: Colorful Bird")
     else:
-        st.write("Mode Kustom (Bebas atur prompt sendiri)")
+        st.info("Mode Kustom: Bebas tulis prompt kustommu sendiri di bawah.")
 
 # Mengatur nilai otomatis berdasarkan preset yang dipilih
 if pilihan_preset == "Mata Futuristik (Cybernetic Eye)":
